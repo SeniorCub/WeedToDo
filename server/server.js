@@ -23,8 +23,8 @@ app.use(express.json());
 
 const corsOptions = {
      // origin: 'https://weedtodo.rhinoguards.co.uk',
-     origin: 'https://weedtodo.vercel.app',
-     //     origin: 'http://localhost:5173',
+     // origin: 'https://weedtodo.vercel.app',
+         origin: 'http://localhost:5173',
      // origin: 'http://192.168.0.148:5173', // Fixed typo: removed the 'I' after IP
      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
      allowedHeaders: ['Content-Type', 'Authorization'],

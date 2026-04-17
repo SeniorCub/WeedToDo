@@ -14,7 +14,7 @@ export const useSignInWithGoogle = () => {
 
   useEffect(() => {
     if (redirectToHome) {
-      navigate("/dashboard");
+      navigate("/dashboard"); 
     }
   }, [redirectToHome, navigate]);
 
