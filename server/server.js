@@ -20,17 +20,34 @@ const app = express();
 // Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+const defaultOrigins = [
+  'http://localhost:5173', 
+  'http://127.0.0.1:5173',
+  'http://localhost:3000',
+  'https://weedtodo.vercel.app',
+  'http://192.168.0.120:5173',
+];
 
-const corsOptions = {
-     // origin: 'https://weedtodo.rhinoguards.co.uk',
-     // origin: 'https://weedtodo.vercel.app',
-         origin: 'http://localhost:5173',
-     // origin: 'http://192.168.0.148:5173', // Fixed typo: removed the 'I' after IP
-     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-     allowedHeaders: ['Content-Type', 'Authorization'],
-     credentials: true,
-};
-app.use(cors(corsOptions));
+const allowedOrigins = process.env.FRONTEND_URL 
+  ? [...process.env.FRONTEND_URL.split(',').map(url => url.trim()), ...defaultOrigins]
+  : defaultOrigins;
+
+// CORS configuration
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      logger.warn(`CORS blocked origin: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  credentials: true,
+  optionsSuccessStatus: 200,
+  maxAge: 86400 // Cache preflight for 24 hours
+}));
 
 // Serve API documentation page
 app.get('/', (req, res) => {
