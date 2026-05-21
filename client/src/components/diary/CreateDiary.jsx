@@ -186,7 +186,7 @@ const CreateDiary = () => {
                                    <div className="flex flex-col items-center">
                                         {!audioRecording ? (
                                              <button
-                                                  onClick={isRecording ? stopAudioRecording : startAudioRecording}
+                                                  onClick={isRecording ? () => stopAudioRecording() : () => startAudioRecording()}
                                                   className={`w-20 h-20 rounded-full ${isRecording
                                                        ? 'bg-red-500 text-white'
                                                        : 'bg-color1 text-white'
@@ -196,10 +196,12 @@ const CreateDiary = () => {
                                              </button>
                                         ) : (
                                              <div className="flex flex-col items-center">
-                                                  <audio src={audioRecording} controls className="mb-4" />
+                                                  <audio src={audioRecording} controls className="mb-4">
+                                                       <track kind="captions" />
+                                                  </audio>
                                                   <div className="flex space-x-4">
                                                        <button
-                                                            onClick={clearAudioRecording}
+                                                            onClick={() => clearAudioRecording()}
                                                             className="bg-red-500 text-white px-4 py-2 rounded-lg"
                                                        >
                                                             Clear
@@ -216,8 +218,9 @@ const CreateDiary = () => {
                               {/* Date and Time Selection */}
                               <div className="flex space-x-4 mb-4">
                                    <div className="flex-1">
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                                        <label htmlFor="diary-date" className="block text-sm font-medium text-gray-700 mb-1">Date</label>
                                         <input
+                                             id="diary-date"
                                              type="date"
                                              value={selectedDateTime.date}
                                              onChange={(e) => setSelectedDateTime(prev => ({ ...prev, date: e.target.value }))}
@@ -225,8 +228,9 @@ const CreateDiary = () => {
                                         />
                                    </div>
                                    <div className="flex-1">
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Time</label>
+                                        <label htmlFor="diary-time" className="block text-sm font-medium text-gray-700 mb-1">Time</label>
                                         <input
+                                             id="diary-time"
                                              type="time"
                                              value={selectedDateTime.time}
                                              onChange={(e) => setSelectedDateTime(prev => ({ ...prev, time: e.target.value }))}
@@ -237,7 +241,7 @@ const CreateDiary = () => {
 
                               {/* Save Button */}
                               <button
-                                   onClick={handleSaveNote}
+                                   onClick={() => handleSaveNote()}
                                    disabled={noteType === 'text' ? !textNote : !audioRecording}
                                    className="w-full py-3 bg-color1 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 flex items-center justify-center"
                               >

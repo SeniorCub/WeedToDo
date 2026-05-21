@@ -85,13 +85,10 @@ const NotesAll = () => {
                          Loading notes...
                     </div>
                ) : (
-                    <>
-                         <NoteEach
-                              notes={filteredNotes}
-                              onUpdateNotes={handleUpdateNotes}
-                         />
-
-                    </>
+                    <NoteEach
+                         notes={filteredNotes}
+                         onUpdateNotes={handleUpdateNotes}
+                    />
                )}
           </>
      );

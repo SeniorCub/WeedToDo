@@ -116,91 +116,91 @@ const ShowDiary = ({ diary, isOpen, set }) => {
 
 
      return (
-          <>
-               {isOpen && diary && (
-                    <div className='fixed top-0 left-1/2 transform -translate-x-1/2 w-full bg-black/50 h-full z-50 flex items-center justify-center'>
-                         <div className="p-4 bg-white shadow-md rounded-lg w-5/6 border border-color1 max-h-[80vh] overflow-y-auto">
+          isOpen && diary && (
+               <div className='fixed top-0 left-1/2 transform -translate-x-1/2 w-full bg-black/50 h-full z-50 flex items-center justify-center'>
+                    <div className="p-4 bg-white shadow-md rounded-lg w-5/6 border border-color1 max-h-[80vh] overflow-y-auto">
 
-                              <div className='flex justify-between items-center mb-4'>
-                                   <div className="text-xs text-gray-400 mt-2 flex items-center">
-                                        {diary.type === 'text' ? (
-                                             <BsFileText className="mr-2 text-color1" />
-                                        ) : (
-                                             <BiMicrophone className="mr-2 text-color1" />
-                                        )} {diary.created_at.split("T")[1].split(":")[0] + ":" + diary.created_at.split("T")[1].split(":")[1]}
-                                        {", " + diary.created_at.split("T")[0]}
-                                   </div>
-                                   <h2></h2>
-                                   <div className="flex space-x-10">
-                                        <span className='cursor-pointer text-red-500' onClick={() => set(false)}>
-                                             <CgClose size={24} />
-                                        </span>
-                                   </div>
+                         <div className='flex justify-between items-center mb-4'>
+                              <div className="text-xs text-gray-400 mt-2 flex items-center">
+                                   {diary.type === 'text' ? (
+                                        <BsFileText className="mr-2 text-color1" />
+                                   ) : (
+                                        <BiMicrophone className="mr-2 text-color1" />
+                                   )} {diary.created_at.split("T")[1].split(":")[0] + ":" + diary.created_at.split("T")[1].split(":")[1]}
+                                   {", " + diary.created_at.split("T")[0]}
                               </div>
-                              {diary.type === 'text' ? (
-                                   <p className="text-gray-600 line-clamp-3 w-full break-words break-all">
-                                        {diary.content
-                                             ? (diary.content.length > 500
-                                                  ? diary.content.substring(0, 500) + '...'
-                                                  : diary.content)
-                                             : ''}
-                                   </p>
-                              ) : (
-                                   <div className="bg-gray-100 rounded-lg p-3 flex items-center space-x-3">
-                                        <button
-                                             onClick={togglePlayPause}
-                                             className="bg-color1 text-white p-2 rounded-full hover:bg-opacity-90 transition-colors"
-                                        >
-                                             {isPlaying ? <BiPause size={20} /> : <BiPlay size={20} />}
-                                        </button>
-                                        <div className="flex-1 relative">
-                                             <input
-                                                  type="range"
-                                                  min="0"
-                                                  max="100"
-                                                  value={progress}
-                                                  onChange={handleProgressChange}
-                                                  className="w-full h-1 bg-gray-300 rounded-full appearance-none cursor-pointer 
-                                                            [&::-webkit-slider-thumb]:appearance-none 
-                                                            [&::-webkit-slider-thumb]:w-3 
-                                                            [&::-webkit-slider-thumb]:h-3 
-                                                            [&::-webkit-slider-thumb]:bg-color1 
-                                                            [&::-webkit-slider-thumb]:rounded-full"
-                                             />
-                                        </div>
-                                        <span className="text-sm text-gray-600">
-                                             {formatTime(currentTime)} / {duration && isFinite(duration) ? formatTime(duration) : '0:00'}
-                                        </span>
-                                        <audio
-                                             ref={audioRef}
-                                             src={getAudioSrc()}
-                                             preload="metadata"
-                                             onPlay={() => setIsPlaying(true)}
-                                             onPause={() => setIsPlaying(false)}
-                                             onEnded={() => {
-                                                  setIsPlaying(false);
-                                                  setProgress(0);
-                                                  if (audioRef.current) {
-                                                       audioRef.current.currentTime = 0;
-                                                  }
-                                             }}
-                                             onError={(e) => {
-                                                  console.error("Audio error:", e);
-                                                  console.error("Audio error code:", e.target.error?.code);
-                                                  console.error("Audio error message:", e.target.error?.message);
-                                                  setDuration(0);
-                                                  setCurrentTime(0);
-                                             }}
+                              <h2></h2>
+                              <div className="flex space-x-10">
+                                   <button type="button" className='cursor-pointer text-red-500 hover:bg-red-50 rounded-full focus:outline-none' onClick={() => set(false)}>
+                                        <CgClose size={24} />
+                                   </button>
+                              </div>
+                         </div>
+                         {diary.type === 'text' ? (
+                              <p className="text-gray-600 line-clamp-3 w-full break-words break-all">
+                                   {diary.content
+                                        ? (diary.content.length > 500
+                                             ? diary.content.substring(0, 500) + '...'
+                                             : diary.content)
+                                        : ''}
+                              </p>
+                         ) : (
+                              <div className="bg-gray-100 rounded-lg p-3 flex items-center space-x-3">
+                                   <button
+                                        onClick={() => togglePlayPause()}
+                                        className="bg-color1 text-white p-2 rounded-full hover:bg-opacity-90 transition-colors"
+                                   >
+                                        {isPlaying ? <BiPause size={20} /> : <BiPlay size={20} />}
+                                   </button>
+                                   <div className="flex-1 relative">
+                                        <input
+                                             type="range"
+                                             min="0"
+                                             max="100"
+                                             value={progress}
+                                             onChange={handleProgressChange}
+                                             className="w-full h-1 bg-gray-300 rounded-full appearance-none cursor-pointer 
+                                                       [&::-webkit-slider-thumb]:appearance-none 
+                                                       [&::-webkit-slider-thumb]:w-3 
+                                                       [&::-webkit-slider-thumb]:h-3 
+                                                       [&::-webkit-slider-thumb]:bg-color1 
+                                                       [&::-webkit-slider-thumb]:rounded-full"
                                         />
                                    </div>
-                              )}
-                              <button className="float-end flex items-center border border-red-300 text-red-300 hover:bg-red-100 p-1 rounded-full hover:text-red-500 hover:border-red-500" onClick={() => handleDelete(diary.id)}>
-                                   <BiTrash size={20} /> Delete
-                              </button>
-                         </div>
+                                   <span className="text-sm text-gray-600">
+                                        {formatTime(currentTime)} / {duration && isFinite(duration) ? formatTime(duration) : '0:00'}
+                                   </span>
+                                   <audio
+                                        ref={audioRef}
+                                        src={getAudioSrc()}
+                                        preload="metadata"
+                                        onPlay={() => setIsPlaying(true)}
+                                        onPause={() => setIsPlaying(false)}
+                                        onEnded={() => {
+                                             setIsPlaying(false);
+                                             setProgress(0);
+                                             if (audioRef.current) {
+                                                  audioRef.current.currentTime = 0;
+                                             }
+                                        }}
+                                        onError={(e) => {
+                                             console.error("Audio error:", e);
+                                             console.error("Audio error code:", e.target.error?.code);
+                                             console.error("Audio error message:", e.target.error?.message);
+                                             setDuration(0);
+                                             setCurrentTime(0);
+                                        }}
+                                   >
+                                        <track kind="captions" />
+                                   </audio>
+                              </div>
+                         )}
+                         <button className="float-end flex items-center border border-red-300 text-red-300 hover:bg-red-100 p-1 rounded-full hover:text-red-500 hover:border-red-500" onClick={() => handleDelete(diary.id)}>
+                              <BiTrash size={20} /> Delete
+                         </button>
                     </div>
-               )}
-          </>
+               </div>
+          )
      );
 };
 

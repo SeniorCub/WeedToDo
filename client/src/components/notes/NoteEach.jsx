@@ -39,8 +39,8 @@ const NoteEach = ({ notes = [], onUpdateNotes }) => {
           }
      };
 
-     const handleEditClick = () => {
-          setSelectedNote(notes); // Set the current note for editing
+     const handleEditClick = (note) => {
+          setSelectedNote(note); // Set the current note for editing
           setIsEditing(true); // Open CreateNote modal
      };
 
@@ -86,7 +86,7 @@ const NoteEach = ({ notes = [], onUpdateNotes }) => {
                                              {note.category || 'Uncategorized'}
                                         </div>
                                         <div className="flex space-x-2">
-                                             <button className="text-color1 p-1 rounded-full cursor-pointer" onClick={handleEditClick}>
+                                             <button className="text-color1 p-1 rounded-full cursor-pointer" onClick={() => handleEditClick(note)}>
                                                   <BiEdit size={20} />
                                              </button>
                                              <button
@@ -98,7 +98,11 @@ const NoteEach = ({ notes = [], onUpdateNotes }) => {
                                         </div>
                                    </div>
 
-                                   <div className='w-full' onClick={() => handleNoteClick(note)}>
+                                   <button
+                                        type="button"
+                                        className='w-full text-left cursor-pointer focus:outline-none'
+                                        onClick={() => handleNoteClick(note)}
+                                   >
                                         <h2 className="font-bold text-lg mb-2">{note.title || ''}</h2>
                                         <p className="text-sm text-gray-600 line-clamp-3 w-full break-words break-all">
                                              {note.contet
@@ -107,7 +111,7 @@ const NoteEach = ({ notes = [], onUpdateNotes }) => {
                                                        : note.contet)
                                                   : ''}
                                         </p>
-                                   </div>
+                                   </button>
 
                                    <div className="text-xs text-gray-400 mt-2">
                                         Created: {note.created_at

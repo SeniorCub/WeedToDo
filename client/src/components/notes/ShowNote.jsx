@@ -63,16 +63,16 @@ const ShowNote = ({ notes, isOpen, set }) => {
                                         {notes.category || 'Uncategorized'}
                                    </div>
                                    <h2 className="font-bold text-xl mb-2">{notes.title || 'Untitled Note'}</h2>
-                                   <span className='cursor-pointer text-red-500' onClick={() => set(false)}>
+                                   <button type="button" className='cursor-pointer text-red-500 hover:bg-red-50 rounded-full focus:outline-none' onClick={() => set(false)}>
                                         <CgClose size={24} />
-                                   </span>
+                                   </button>
                               </div>
                               <div className="flex justify-between items-start mb-2">
                                    <div className="text-xs text-gray-400 mt-2">
                                         Created: {notes.created_at ? new Date(notes.created_at).toLocaleDateString() : 'Unknown date'}
                                    </div>
                                    <div className="flex space-x-2">
-                                        <button className="text-color1 p-1 rounded-full cursor-pointer" onClick={handleEditClick}>
+                                        <button className="text-color1 p-1 rounded-full cursor-pointer" onClick={() => handleEditClick()}>
                                              <BiEdit size={20} />
                                         </button>
                                         <button className="text-red-500 hover:bg-red-100 p-1 rounded-full" onClick={() => deleteNote(notes.id)}>

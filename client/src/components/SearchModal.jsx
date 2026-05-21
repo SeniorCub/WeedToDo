@@ -32,10 +32,11 @@ const SearchModal = ({ allTasks}) => {
                {/* Search Bar */}
                <div className="bg-color3 w-[30vh] h-[5vh] flex flex-col justify-center items-center -translate-y-5 fixed right-1/2 md:w-[50vw] top-[5vh] transform translate-x-1/2">
                     <label className="input input-bordered flex items-center gap-2 bg-color1 text-white w-full h-full rounded-none">
+                         <span className="sr-only">Search tasks</span>
                          <input type="text" className="grow placeholder:text-gray-300" placeholder="Search" onChange={(e) => setSearch(e.target.value)}value={searchItem} name="search" />
-                         <span onClick={getSearch}>
+                         <button type="button" onClick={() => getSearch()} className="focus:outline-none">
                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="size-6"><path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
-                         </span>
+                         </button>
                     </label>
                </div>
 

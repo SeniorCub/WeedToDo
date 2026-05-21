@@ -54,11 +54,8 @@ const Dashboard = () => {
           fetchData();
      }, []);
 
-     const date = new Date().toLocaleTimeString("en-US", {
-          hour: "numeric",
-          hour12: false,
-     });
-
+     const hour = new Date().getHours();
+     const greeting = hour < 12 ? "Morning" : hour < 18 ? "Afternoon" : "Evening";
 
 
      return (
@@ -66,7 +63,7 @@ const Dashboard = () => {
                <div className="basis-1/12 space-y-5 p-5 text-left">
                     <div className="flex justify-between items-center">
                          <div>
-                              <h1 className="font-semibold text-2xl">Good {date < 12 ? "Morning" : date < 18 ? "Afternoon" : "Evening"},</h1>
+                              <h1 className="font-semibold text-2xl">Good {greeting},</h1>
                               <p className="font-normal text-lg flex gap-3">
                                    Dear{" "}
                                    {isLoadingUser ? (
@@ -76,7 +73,7 @@ const Dashboard = () => {
                                    )}
                               </p>
                          </div>
-                         <div className="avatar cursor-pointer" onClick={()=> logout()}>
+                         <button type="button" className="avatar cursor-pointer focus:outline-none" onClick={()=> logout()}>
                               <div className="w-12 rounded-full">
                                    <img
                                         src={user?.photoUrl ?? "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"}
@@ -84,7 +81,7 @@ const Dashboard = () => {
                                         className="w-20 h-20 rounded-full object-cover"
                                    />
                               </div>
-                         </div>
+                         </button>
                     </div>
                </div>
 

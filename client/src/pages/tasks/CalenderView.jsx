@@ -157,7 +157,7 @@ const CalendarView = () => {
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                          <div className="p-6 max-w-lg w-full relative">
                               <button
-                                   onClick={closeModal}
+                                   onClick={() => closeModal()}
                                    className="text-red-700 absolute -top-40 -right-40"
                               >
                                    <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">

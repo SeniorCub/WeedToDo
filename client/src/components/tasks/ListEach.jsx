@@ -14,7 +14,7 @@ export const ListEach = ({ task }) => {
      const [isOpen, setisopen] = useState(false);
      const [isEditing, setIsEditing] = useState(false);
 
-     const handleEditClick = () => {
+     const handleEditClick = (task) => {
           setSelectedTask(task); // Set the current note for editing
           setIsEditing(true); // Open CreateNote modal
      };
@@ -81,22 +81,27 @@ export const ListEach = ({ task }) => {
                     >
                          <div className="flex justify-between items-center mb-2">
                               <div className="flex items-center">
-                                   {task.isComplete === 1 ? (
-                                        <BsCheckCircle
-                                             onClick={() => completeTask(task.id)}
-                                             className={`mr-2 cursor-pointer ${task.isComplete === 1
-                                                  ? 'text-green-500'
-                                                  : 'text-gray-300'
-                                                  }`}
-                                        />) : (
-                                        <BsCircle
-                                             onClick={() => completeTask(task.id)}
-                                             className={`mr-2 cursor-pointer ${task.isComplete === 1
-                                                  ? 'text-green-500'
-                                                  : 'text-gray-300'
-                                                  }`}
-                                        />
-                                   )}
+                                   <button 
+                                        type="button"
+                                        onClick={() => completeTask(task.id)}
+                                        className="focus:outline-none mr-2"
+                                        aria-label={task.isComplete === 1 ? "Mark task as incomplete" : "Mark task as complete"}
+                                   >
+                                        {task.isComplete === 1 ? (
+                                             <BsCheckCircle
+                                                  className={`${task.isComplete === 1
+                                                       ? 'text-green-500'
+                                                       : 'text-gray-300'
+                                                       }`}
+                                             />) : (
+                                             <BsCircle
+                                                  className={`${task.isComplete === 1
+                                                       ? 'text-green-500'
+                                                       : 'text-gray-300'
+                                                       }`}
+                                             />
+                                        )}
+                                   </button>
                                    <span className="text-sm text-gray-500">
                                         {task.time.split(":")[0] + ":" + task.time.split(":")[1]}
                                         {", " + task.date.split("T")[0]}
@@ -118,8 +123,9 @@ export const ListEach = ({ task }) => {
                               </div>
                          </div>
 
-                         <div
-                              className={` cursor-pointer
+                         <button
+                              type="button"
+                              className={`w-full text-left focus:outline-none cursor-pointer
                                         ${task.isComplete === 1
                                         ? 'line-through text-gray-500'
                                         : 'text-gray-800'
@@ -132,7 +138,7 @@ export const ListEach = ({ task }) => {
                                    {task.description.substring(0, 200)}
                                    {task.description.length > 300 ? '...' : ''}
                               </p>
-                         </div>
+                         </button>
                     </div>
 
                </div>

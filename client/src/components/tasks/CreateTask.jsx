@@ -80,13 +80,13 @@ const CreateTask = ({ tasks, isOpen, setIsOpen }) => {
                {isOpened && (
                     <div className="fixed top-28 p-4 bg-color1 shadow-md rounded-lg text-white w-5/6 left-1/2 right-3 transform -translate-x-1/2 z-50">
                          <div className='flex justify-between items-center'>
-                              <span></span><h1 className="text-center text-2xl font-bold">Create Task</h1> <span className='border rounded-full text-red-500 border-red-500' onClick={() => setIsOpened(false)}><CgClose /></span>
+                              <span></span><h1 className="text-center text-2xl font-bold">Create Task</h1> <button type="button" className='border rounded-full text-red-500 border-red-500 hover:bg-red-50 focus:outline-none' onClick={() => setIsOpened(false)}><CgClose /></button>
                          </div>
                          <form onSubmit={formik.handleSubmit}>
                               <div className="flex flex-col space-y-4">
                                    <div className="flex items-center sr-only">
-                                        <input type="checkbox" name="completed" onChange={formik.handleChange} className="checkbox checkbox-success mr-2" />
-                                        <label className="font-semibold">Mark as Completed</label>
+                                        <input type="checkbox" id="completed" name="completed" onChange={formik.handleChange} className="checkbox checkbox-success mr-2" />
+                                        <label htmlFor="completed" className="font-semibold">Mark as Completed</label>
                                    </div>
                                    {formik.touched.title && formik.errors.title ? (<p className="text-red-500 text-xs">{formik.errors.title}</p>) : null}
                                    <input type="text" name="title" value={formik.values.title} onChange={formik.handleChange} placeholder="Task title" className="w-full p-2 border bg-white/10 text-black placeholder:text-black rounded-lg" />

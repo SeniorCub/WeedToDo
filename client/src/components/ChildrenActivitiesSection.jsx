@@ -26,8 +26,8 @@ const ChildrenActivitiesSection = () => {
           What Children Love to Do
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-          {activities.map((activity, index) => (
-            <div key={index} className="bg-white shadow-lg rounded-lg overflow-hidden">
+          {activities.map((activity) => (
+            <div key={activity.title} className="bg-white shadow-lg rounded-lg overflow-hidden">
               <div className="h-64">
                 <Spline scene={activity.sceneUrl} className='w-full h-full' />
               </div>

@@ -145,7 +145,18 @@ const DiaryEntry = ({ entry, data }) => {
                               </button>
                          </div>
                     </div>
-                    <div onClick={() => handleDiaryClick(data)} className='cursor-pointer'>
+                    <div
+                         onClick={() => handleDiaryClick(data)}
+                         onKeyDown={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                   e.preventDefault();
+                                   handleDiaryClick(data);
+                              }
+                         }}
+                         role="button"
+                         tabIndex="0"
+                         className='cursor-pointer'
+                    >
                          {entry === 'text' ? (
                               <p className="text-gray-600 line-clamp-3 w-full break-words break-all">
                                    {data.content
@@ -157,7 +168,10 @@ const DiaryEntry = ({ entry, data }) => {
                          ) : (
                               <div className="bg-gray-100 rounded-lg p-3 flex items-center space-x-3">
                                    <button
-                                        onClick={togglePlayPause}
+                                        onClick={(e) => {
+                                             e.stopPropagation();
+                                             togglePlayPause();
+                                        }}
                                         className="bg-color1 text-white p-2 rounded-full hover:bg-opacity-90 transition-colors"
                                    >
                                         {isPlaying ? <BiPause size={20} /> : <BiPlay size={20} />}
@@ -200,7 +214,9 @@ const DiaryEntry = ({ entry, data }) => {
                                              setDuration(0);
                                              setCurrentTime(0);
                                         }}
-                                   />
+                                   >
+                                        <track kind="captions" />
+                                   </audio>
                               </div>
                          )}
                     </div>

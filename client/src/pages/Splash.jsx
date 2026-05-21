@@ -3,7 +3,6 @@ import { Link } from "react-router-dom"
 
 const Splash = () => {
      return (
-     <>
           <div className="bg-color1 h-svh w-dvw text-white p-6 flex flex-col">
                <div className="basis-2/4"></div>
                <div className="text-left flex flex-col gap-6 items-baseline justify-end">
@@ -12,7 +11,6 @@ const Splash = () => {
                     <Link  className="bg-white text-color1 w-full py-6 rounded-3xl text-xl mt-10 flex justify-center items-center" to={"/sign"}>Get Started</Link>
                </div>
           </div>
-     </>
      )
 }
 

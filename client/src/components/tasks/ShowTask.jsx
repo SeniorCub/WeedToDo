@@ -73,26 +73,31 @@ const ShowTask = ({ tasks, isOpen, set }) => {
                     <div className='fixed top-0 left-1/2 transform -translate-x-1/2 w-full bg-black/50 h-full z-30 flex items-center justify-center'>
                          <div className="p-4 bg-white shadow-md rounded-lg w-5/6 border border-color1 max-h-[80vh] overflow-y-auto">
                               <div className='flex justify-between items-center mb-4'>
-                                   {tasks.isComplete === 1 ? (
-                                        <BsCheckCircle
-                                             onClick={() => completeTask(tasks.id)}
-                                             className={`mr-2 cursor-pointer ${tasks.isComplete === 1
-                                                  ? 'text-green-500'
-                                                  : 'text-gray-300'
-                                                  }`}
-                                        />) : (
-                                        <BsCircle
-                                             onClick={() => completeTask(tasks.id)}
-                                             className={`mr-2 cursor-pointer ${tasks.isComplete === 1
-                                                  ? 'text-green-500'
-                                                  : 'text-gray-300'
-                                                  }`}
-                                        />
-                                   )}
+                                   <button 
+                                        type="button"
+                                        onClick={() => completeTask(tasks.id)}
+                                        className="focus:outline-none"
+                                        aria-label={tasks.isComplete === 1 ? "Mark task as incomplete" : "Mark task as complete"}
+                                   >
+                                        {tasks.isComplete === 1 ? (
+                                             <BsCheckCircle
+                                                  className={`mr-2 cursor-pointer ${tasks.isComplete === 1
+                                                       ? 'text-green-500'
+                                                       : 'text-gray-300'
+                                                       }`}
+                                             />) : (
+                                             <BsCircle
+                                                  className={`mr-2 cursor-pointer ${tasks.isComplete === 1
+                                                       ? 'text-green-500'
+                                                       : 'text-gray-300'
+                                                       }`}
+                                             />
+                                        )}
+                                   </button>
                                    <h2 className="font-bold text-xl mb-2">{tasks.title || 'Untitled Note'}</h2>
-                                   <span className='cursor-pointer text-red-500' onClick={() => set(false)}>
+                                   <button type="button" className='cursor-pointer text-red-500 hover:bg-red-50 rounded-full focus:outline-none' onClick={() => set(false)}>
                                         <CgClose size={24} />
-                                   </span>
+                                   </button>
                               </div>
                               <div className="flex justify-between items-start mb-2">
                                    <div className="text-xs text-gray-400 mt-2">
@@ -100,7 +105,7 @@ const ShowTask = ({ tasks, isOpen, set }) => {
                                         {", " + tasks.date.split("T")[0]}
                                    </div>
                                    <div className="flex space-x-2">
-                                        <button className="text-color1 p-1 rounded-full cursor-pointer" onClick={handleEditClick}>
+                                        <button className="text-color1 p-1 rounded-full cursor-pointer" onClick={() => handleEditClick()}>
                                              <BiEdit size={20} />
                                         </button>
                                         <button className="text-red-500 hover:bg-red-100 p-1 rounded-full" onClick={() => deleteTask(tasks.id)}>

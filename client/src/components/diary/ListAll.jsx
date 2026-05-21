@@ -44,27 +44,23 @@ const ListAll = () => {
      }, [token, url, id]);
 
      return (
-          <>
-               {
-                    loading ? (
-                         <div className="text-center text-gray-500 mt-10" >
-                              Loading Diary...
-                         </div >
-                    ) : (
-                         diaries.length === 0 ? (
-                              <p className="text-center text-gray-500">No content available.</p>
-                         ) : (
-                              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 container pb-28">
-                                   {
-                                        diaries.map((diary) => (
-                                             <DiaryEntry entry={diary.type} key={diary.id} data={diary} />
-                                        ))
-                                   }
-                              </div>
-                         )
-                    )
-               }
-          </>
+          loading ? (
+               <div className="text-center text-gray-500 mt-10" >
+                    Loading Diary...
+               </div >
+          ) : (
+               diaries.length === 0 ? (
+                    <p className="text-center text-gray-500">No content available.</p>
+               ) : (
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 container pb-28">
+                         {
+                              diaries.map((diary) => (
+                                   <DiaryEntry entry={diary.type} key={diary.id} data={diary} />
+                              ))
+                         }
+                    </div>
+               )
+          )
      )
 }
 

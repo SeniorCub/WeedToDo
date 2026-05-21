@@ -79,12 +79,13 @@ const CreateNote = ({ notes, isOpen, setIsOpen }) => {
                          <div className='flex justify-between items-center mb-4'>
                               <span></span>
                               <h1 className="text-center text-2xl text-color1 font-bold">Create Note</h1>
-                              <span
-                                   className='cursor-pointer text-red-500'
+                              <button
+                                   type="button"
+                                   className='cursor-pointer text-red-500 hover:bg-red-50 rounded-full focus:outline-none'
                                    onClick={() => setIsOpened(false)}
                               >
                                    <CgClose size={24} />
-                              </span>
+                              </button>
                          </div>
 
                          <form onSubmit={formik.handleSubmit}>

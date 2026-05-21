@@ -47,23 +47,21 @@ const SmallNavbar = ({ tab }) => {
           fetchData();
      }, []);
 
-     const date = new Date().toLocaleTimeString("en-US", {
-          hour: "numeric",
-          hour12: false,
-     });
+     const hour = new Date().getHours();
+     const greeting = hour < 12 ? "Morning" : hour < 18 ? "Afternoon" : "Evening";
 
      return (
           <div className="flex justify-between items-center p-5">
                <div className="flex gap-3 items-center">
                     <Link to={"/dashboard"} className="text-black text-2xl"><BiArrowBack /></Link>
                     <div className="flex items-start flex-col">
-                         <h1 className="font-semibold md:text-2xl">Good {date < 12 ? "Morning" : date < 18 ? "Afternoon" : "Evening"},</h1>
+                         <h1 className="font-semibold md:text-2xl">Good {greeting},</h1>
                          <div className="text-color1 font-bold md:text-2xl capitalize">My {tab}</div>
                     </div>
                </div>
                <div className="flex items-center gap-3">
                     <div className="font-normal md:text-lg text-xs">{user?.fullname || "User"}</div>
-                    <div className="avatar cursor-pointer" onClick={() => logout()}>
+                    <button type="button" className="avatar cursor-pointer focus:outline-none" onClick={() => logout()}>
                          <div className="w-12 rounded-full">
                               <img
                                    src={user?.photoUrl ?? "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"}
@@ -71,7 +69,7 @@ const SmallNavbar = ({ tab }) => {
                                    className="w-20 h-20 rounded-full object-cover"
                               />
                          </div>
-                    </div>
+                    </button>
                </div>
           </div>
      )
