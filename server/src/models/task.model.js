@@ -18,27 +18,27 @@ export const getTask = async (user_id) => {
      }
 }
 
-export const getaTask = async (id) => {
+export const getaTask = async (id, user_id) => {
      try {
-          const [result] = await db.query('SELECT * FROM task_tb WHERE id = ?', [id])
+          const [result] = await db.query('SELECT * FROM task_tb WHERE id = ? AND user_id = ?', [id, user_id])
           return result
      } catch (error) {
           console.error(error.message);
      }
 }
 
-export const isComplete = async (id) => {
+export const isComplete = async (id, user_id) => {
      try {
-          const [result] = await db.query('UPDATE task_tb SET isComplete = 1 WHERE id = ?', [id])
+          const [result] = await db.query('UPDATE task_tb SET isComplete = 1 WHERE id = ? AND user_id = ?', [id, user_id])
           return result
      } catch (error) {
           console.error(error.message);
      }
 }
 
-export const deleteTask = async (id) => {
+export const deleteTask = async (id, user_id) => {
      try {
-          const [result] = await db.query('DELETE FROM task_tb WHERE id = ?', [id])
+          const [result] = await db.query('DELETE FROM task_tb WHERE id = ? AND user_id = ?', [id, user_id])
           return result
      } catch (error) {
           console.error(error.message);

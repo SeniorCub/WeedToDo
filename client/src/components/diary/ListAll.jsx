@@ -1,58 +1,49 @@
-import { useEffect, useState } from 'react';
 import DiaryEntry from '../../components/diary/DiaryEntry';
 import toast from 'react-hot-toast';
-import { logout } from '../../hooks/logout';
-import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL;
+import { useQuery } from '@tanstack/react-query';
+import api from '../../api/axios';
 
 const ListAll = () => {
-     const [diaries, setDiaries] = useState([]);
-     const [loading, setLoading] = useState(true);
-
      const id = localStorage.getItem('id');
-     const token = localStorage.getItem('token');
 
-     const url = `${API_URL}/diary/all/${id}`;
+     const { data: diaries = [], isLoading, isError, error } = useQuery({
+          queryKey: ['diaries', id],
+          queryFn: async () => {
+               const response = await api.get(`/diary/all/${id}`);
+               return response.data.data;
+          },
+          enabled: !!id,
+     });
 
-     useEffect(() => {
-          const fetchall = async () => {
-               try {
-                    const response = await axios.get(url, {
-                         headers: {
-                              'Content-Type': 'application/json',
-                              Authorization: `Bearer ${token}`,
-                         },
-                    });
-
-                    if (response.status === 200) {
-                         setLoading(false);
-                         const diary = response.data.data;
-                         setDiaries(diary);
-                    } else {
-                         setLoading(false);
-                         toast.error(response.data.message);
-                         logout();
-                    }
-               } catch (error) {
-                    setLoading(false);
-                    toast.error(error.message);
-                    logout();
-               }
-          }
-          fetchall()
-     }, [token, url, id]);
+     if (isError) {
+          toast.error(error.response?.data?.message || error.message);
+     }
 
      return (
-          loading ? (
-               <div className="text-center text-gray-500 mt-10" >
-                    Loading Diary...
-               </div >
+          isLoading ? (
+               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 container pb-28 mt-4">
+                    {[1, 2, 3].map(n => (
+                         <div key={n} className="bg-white shadow-md rounded-lg p-4 mb-4 relative animate-pulse w-full">
+                              <div className="flex justify-between items-center mb-2">
+                                   <div className="flex items-center space-x-2">
+                                        <div className="w-5 h-5 bg-gray-200 rounded"></div>
+                                        <div className="h-3 w-24 bg-gray-200 rounded"></div>
+                                   </div>
+                                   <div className="w-6 h-6 bg-gray-200 rounded-full"></div>
+                              </div>
+                              <div className="space-y-2 mt-4">
+                                   <div className="h-3 bg-gray-200 rounded w-full"></div>
+                                   <div className="h-3 bg-gray-200 rounded w-5/6"></div>
+                                   <div className="h-3 bg-gray-200 rounded w-4/6"></div>
+                              </div>
+                         </div>
+                    ))}
+               </div>
           ) : (
                diaries.length === 0 ? (
-                    <p className="text-center text-gray-500">No content available.</p>
+                    <p className="text-center text-gray-500 mt-10">No content available.</p>
                ) : (
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 container pb-28">
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 container pb-28 mt-4">
                          {
                               diaries.map((diary) => (
                                    <DiaryEntry entry={diary.type} key={diary.id} data={diary} />
@@ -64,4 +55,4 @@ const ListAll = () => {
      )
 }
 
-export default ListAll
+export default ListAll;

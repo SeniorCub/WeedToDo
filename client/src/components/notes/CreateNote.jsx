@@ -2,11 +2,10 @@
 import { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
-import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { CgClose } from 'react-icons/cg';
-
-const API_URL = import.meta.env.VITE_API_URL;
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import api from '../../api/axios';
 
 const validationSchema = Yup.object().shape({
      title: Yup.string().required('Title is required'),
@@ -16,11 +15,30 @@ const validationSchema = Yup.object().shape({
 
 const CreateNote = ({ notes, isOpen, setIsOpen }) => {
      const [isOpened, setIsOpened] = useState(isOpen);
+     const queryClient = useQueryClient();
+     const userId = localStorage.getItem('id');
 
      useEffect(() => {
           setIsOpened(isOpen);
      }, [isOpen]);
 
+     const mutation = useMutation({
+          mutationFn: (data) => {
+               const url = `/note/${notes?.id ? `edit/${notes.id}` : 'create'}`;
+               return api.post(url, data);
+          },
+          onSuccess: (response) => {
+               toast.success(response.data.message);
+               queryClient.invalidateQueries({ queryKey: ['notes', userId] });
+               formik.resetForm();
+               setIsOpened(false);
+               if (setIsOpen) setIsOpen(false);
+          },
+          onError: (error) => {
+               console.error('Error creating/updating note:', error);
+               toast.error(error.response?.data?.message || 'Failed to save note');
+          }
+     });
 
      const formik = useFormik({
           initialValues: {
@@ -30,36 +48,8 @@ const CreateNote = ({ notes, isOpen, setIsOpen }) => {
           },
           enableReinitialize: true,
           validationSchema,
-          onSubmit: async (values, { resetForm }) => {
-               const url = `${API_URL}/note/${notes?.id ? `edit/${notes.id}` : 'create'}`;
-               const id = localStorage.getItem('id');
-               const token = localStorage.getItem('token');
-               const data = {
-                    user_id: id,
-                    title: values.title,
-                    contet: values.contet,
-                    category: values.category,
-               };
-
-               try {
-                    const response = await axios.post(url, data, {
-                         headers: {
-                              'Content-Type': 'application/json',
-                              Authorization: `Bearer ${token}`,
-                         }
-                    });
-
-                    if (response.status === 200) {
-                         toast.success(response.data.message);
-                         resetForm();
-                         setIsOpened(false);
-                         setIsOpen(false); // Close modal on success
-                         window.location.reload();
-                    }
-               } catch (error) {
-                    console.error('Error creating/updating note:', error);
-                    toast.error(error.response?.data?.message || 'Failed to save note');
-               }
+          onSubmit: (values) => {
+               mutation.mutate(values);
           }
      });
 
@@ -128,9 +118,10 @@ const CreateNote = ({ notes, isOpen, setIsOpen }) => {
 
                                    <button
                                         type="submit"
-                                        className="w-full py-2 px-4 bg-color1 text-white font-bold rounded-lg"
+                                        disabled={mutation.isPending}
+                                        className="w-full py-2 px-4 bg-color1 text-white font-bold rounded-lg disabled:opacity-50"
                                    >
-                                        {notes ? "Update Note" : "Create Note"}
+                                        {mutation.isPending ? "Saving..." : (notes ? "Update Note" : "Create Note")}
                                    </button>
                               </div>
                          </form>

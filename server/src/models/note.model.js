@@ -26,27 +26,27 @@ export const getallNotes = async (user_id) => {
      }
 }
 
-export const getNote = async (id) => {
+export const getNote = async (id, user_id) => {
      try {
-          const [result] = await db.query('SELECT * FROM note_tb WHERE id = ?', [id])
+          const [result] = await db.query('SELECT * FROM note_tb WHERE id = ? AND user_id = ?', [id, user_id])
           return result
      } catch (error) {
           console.error(error.message);
      }
 }
 
-export const removeNote = async (id) => {
+export const removeNote = async (id, user_id) => {
      try {
-          const [result] = await db.query('DELETE FROM note_tb WHERE id = ?', [id])
+          const [result] = await db.query('DELETE FROM note_tb WHERE id = ? AND user_id = ?', [id, user_id])
           return result
      } catch (error) {
           console.error(error.message)
      }
 }
 
-export const addFav = async (id) => {
+export const addFav = async (id, user_id) => {
      try {
-          const [result] = await db.query('UPDATE note_tb SET favorite = 1 WHERE id = ?', [id])
+          const [result] = await db.query('UPDATE note_tb SET favorite = 1 WHERE id = ? AND user_id = ?', [id, user_id])
           return result
      } catch (error) {
           console.error(error.message)

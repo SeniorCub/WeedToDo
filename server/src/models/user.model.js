@@ -31,6 +31,7 @@ export const removeUser = async (id) => {
      try {
           await db.query('DELETE FROM task_tb WHERE user_id = ?', [id])
           await db.query('DELETE FROM note_tb WHERE user_id = ?', [id])
+          await db.query('DELETE FROM diary_tb WHERE user_id = ?', [id])
           const [result] = await db.query('DELETE FROM user_tb WHERE id = ?', [id])
           return result
      } catch (error) {

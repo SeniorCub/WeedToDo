@@ -5,14 +5,15 @@ import { BsCheckCircle, BsCircle } from 'react-icons/bs';
 import ShowTask from './ShowTask';
 import CreateTask from './CreateTask';
 import { useState } from 'react';
-
-const API_URL = import.meta.env.VITE_API_URL;
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import api from '../../api/axios';
 
 export const ListEach = ({ task }) => {
-
      const [selectedTask, setSelectedTask] = useState(null);
      const [isOpen, setisopen] = useState(false);
      const [isEditing, setIsEditing] = useState(false);
+     const queryClient = useQueryClient();
+     const userId = localStorage.getItem('id');
 
      const handleEditClick = (task) => {
           setSelectedTask(task); // Set the current note for editing
@@ -24,53 +25,27 @@ export const ListEach = ({ task }) => {
           setisopen(true);
      }
 
-     const deleteTask = async (taskId) => {
-          try {
-               const token = localStorage.getItem('token');
-
-               const requestOptions = {
-                    method: "DELETE",
-                    headers: {
-                         'Content-Type': 'application/json',
-                         Authorization: `Bearer ${token}`,
-                    },
-               };
-               let response = await fetch(`${API_URL}/task/delete/${taskId}`, requestOptions);
-               if (response.status === 200) {
-                    toast.success("Task deleted successfully.");
-                    window.location.reload();
-               } else {
-                    toast.error("Failed to delete task.");
-               }
-          } catch (error) {
-               console.error("Error deleting task:", error);
+     const deleteMutation = useMutation({
+          mutationFn: (taskId) => api.delete(`/task/delete/${taskId}`),
+          onSuccess: () => {
+               toast.success("Task deleted successfully.");
+               queryClient.invalidateQueries({ queryKey: ['tasks', userId] });
+          },
+          onError: () => {
                toast.error("Failed to delete task.");
           }
-     };
+     });
 
-     const completeTask = async (taskId) => {
-          try {
-               const token = localStorage.getItem('token');
-
-               const requestOptions = {
-                    method: "PUT",
-                    headers: {
-                         'Content-Type': 'application/json',
-                         Authorization: `Bearer ${token}`,
-                    },
-               };
-               let response = await fetch(`${API_URL}/task/complete/${taskId}`, requestOptions);
-               if (response.status === 200) {
-                    toast.success("Task completed successfully.");
-                    window.location.reload();
-               } else {
-                    toast.error("Failed to complete task.");
-               }
-          } catch (error) {
-               console.error("Error completing task:", error);
+     const completeMutation = useMutation({
+          mutationFn: (taskId) => api.put(`/task/complete/${taskId}`),
+          onSuccess: () => {
+               toast.success("Task completed successfully.");
+               queryClient.invalidateQueries({ queryKey: ['tasks', userId] });
+          },
+          onError: () => {
                toast.error("Failed to complete task.");
           }
-     }
+     });
 
      return (
           <>
@@ -83,9 +58,10 @@ export const ListEach = ({ task }) => {
                               <div className="flex items-center">
                                    <button 
                                         type="button"
-                                        onClick={() => completeTask(task.id)}
+                                        onClick={() => completeMutation.mutate(task.id)}
                                         className="focus:outline-none mr-2"
                                         aria-label={task.isComplete === 1 ? "Mark task as incomplete" : "Mark task as complete"}
+                                        disabled={completeMutation.isPending}
                                    >
                                         {task.isComplete === 1 ? (
                                              <BsCheckCircle
@@ -115,8 +91,9 @@ export const ListEach = ({ task }) => {
                                         <BiEdit size={20} />
                                    </button>
                                    <button
-                                        className="text-red-500 hover:bg-red-100 p-1 rounded-full"
-                                        onClick={() => deleteTask(task.id)}
+                                        className="text-red-500 hover:bg-red-100 p-1 rounded-full disabled:opacity-50"
+                                        onClick={() => deleteMutation.mutate(task.id)}
+                                        disabled={deleteMutation.isPending}
                                    >
                                         <BiTrash size={20} />
                                    </button>

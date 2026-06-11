@@ -4,6 +4,8 @@ import { BiMicrophone, BiTrash, BiPlay, BiPause } from 'react-icons/bi';
 import { useState, useRef, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import ShowDiary from './ShowDiary';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import api from '../../api/axios';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -22,6 +24,8 @@ const DiaryEntry = ({ entry, data }) => {
      const audioRef = useRef(null);
      const [selectedDiary, setSelectedDiary] = useState(null);
      const [isOpen, setisopen] = useState(false);
+     const queryClient = useQueryClient();
+     const userId = localStorage.getItem('id');
 
      const handleDiaryClick = (data) => {
           setSelectedDiary(data);
@@ -97,29 +101,17 @@ const DiaryEntry = ({ entry, data }) => {
           };
      }, []);
 
-     const handleDelete = async (taskId) => {
-          try {
-               const token = localStorage.getItem('token');
-
-               const requestOptions = {
-                    method: "DELETE",
-                    headers: {
-                         'Content-Type': 'application/json',
-                         Authorization: `Bearer ${token}`,
-                    },
-               };
-               let response = await fetch(`${API_URL}/diary/delete/${taskId}`, requestOptions);
-               if (response.status === 200) {
-                    toast.success("Task deleted successfully.");
-                    window.location.reload();
-               } else {
-                    toast.error("Failed to delete diary entry.");
-               }
-          } catch (error) {
+     const deleteMutation = useMutation({
+          mutationFn: (diaryId) => api.delete(`/diary/delete/${diaryId}`),
+          onSuccess: () => {
+               toast.success("Diary entry deleted successfully.");
+               queryClient.invalidateQueries({ queryKey: ['diaries', userId] });
+          },
+          onError: (error) => {
                console.error("Error deleting diary entry:", error);
                toast.error("Failed to delete diary entry.");
           }
-     };
+     });
 
      return (
           <>
@@ -138,8 +130,9 @@ const DiaryEntry = ({ entry, data }) => {
                          </div>
                          <div className="flex space-x-2">
                               <button
-                                   className="text-red-500 hover:bg-red-100 p-1 rounded-full"
-                                   onClick={() => handleDelete(data.id)}
+                                   className="text-red-500 hover:bg-red-100 p-1 rounded-full disabled:opacity-50"
+                                   onClick={() => deleteMutation.mutate(data.id)}
+                                   disabled={deleteMutation.isPending}
                               >
                                    <BiTrash size={20} />
                               </button>

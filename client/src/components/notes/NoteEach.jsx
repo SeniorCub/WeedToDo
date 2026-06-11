@@ -5,39 +5,28 @@ import { AiFillTag } from 'react-icons/ai';
 import ShowNote from './ShowNote';
 import { useState } from 'react';
 import CreateNote from './CreateNote';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import api from '../../api/axios';
+import ReactMarkdown from 'react-markdown';
 
-const API_URL = import.meta.env.VITE_API_URL;
-
-const NoteEach = ({ notes = [], onUpdateNotes }) => {
+const NoteEach = ({ notes = [] }) => {
      const [selectedNote, setSelectedNote] = useState(null);
      const [isOpen, setisopen] = useState(false);
      const [isEditing, setIsEditing] = useState(false);
+     const queryClient = useQueryClient();
+     const userId = localStorage.getItem('id');
 
-     const deleteNote = async (noteId) => {
-          try {
-               const token = localStorage.getItem('token');
-
-               const requestOptions = {
-                    method: "DELETE",
-                    headers: {
-                         'Content-Type': 'application/json',
-                         Authorization: `Bearer ${token}`,
-                    },
-               };
-
-               let response = await fetch(`${API_URL}/note/delete/${noteId}`, requestOptions);
-
-               if (response.status === 200) {
-                    toast.success("Note deleted successfully.");
-                    onUpdateNotes(noteId);
-               } else {
-                    toast.error("Failed to delete note.");
-               }
-          } catch (error) {
+     const deleteMutation = useMutation({
+          mutationFn: (noteId) => api.delete(`/note/delete/${noteId}`),
+          onSuccess: () => {
+               toast.success("Note deleted successfully.");
+               queryClient.invalidateQueries({ queryKey: ['notes', userId] });
+          },
+          onError: (error) => {
                console.error("Error deleting note:", error);
                toast.error("Failed to delete note.");
           }
-     };
+     });
 
      const handleEditClick = (note) => {
           setSelectedNote(note); // Set the current note for editing
@@ -78,7 +67,7 @@ const NoteEach = ({ notes = [], onUpdateNotes }) => {
                          notes.map((note) => (
                               <div
                                    key={note.id}
-                                   className="bg-white shadow-md rounded-lg p-4 relative border w-full"
+                                   className="bg-white shadow-md rounded-lg p-4 relative border w-full flex flex-col"
                               >
                                    <div className="flex justify-between items-start mb-2">
                                         <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs ${getCategoryColor(note.category)}`}>
@@ -90,8 +79,9 @@ const NoteEach = ({ notes = [], onUpdateNotes }) => {
                                                   <BiEdit size={20} />
                                              </button>
                                              <button
-                                                  className="text-red-500 hover:bg-red-100 p-1 rounded-full"
-                                                  onClick={() => deleteNote(note.id)}
+                                                  className="text-red-500 hover:bg-red-100 p-1 rounded-full disabled:opacity-50"
+                                                  onClick={() => deleteMutation.mutate(note.id)}
+                                                  disabled={deleteMutation.isPending}
                                              >
                                                   <BiTrash size={20} />
                                              </button>
@@ -100,20 +90,22 @@ const NoteEach = ({ notes = [], onUpdateNotes }) => {
 
                                    <button
                                         type="button"
-                                        className='w-full text-left cursor-pointer focus:outline-none'
+                                        className='w-full text-left cursor-pointer focus:outline-none flex-1 flex flex-col'
                                         onClick={() => handleNoteClick(note)}
                                    >
                                         <h2 className="font-bold text-lg mb-2">{note.title || ''}</h2>
-                                        <p className="text-sm text-gray-600 line-clamp-3 w-full break-words break-all">
-                                             {note.contet
-                                                  ? (note.contet.length > 500
-                                                       ? note.contet.substring(0, 500) + '...'
-                                                       : note.contet)
-                                                  : ''}
-                                        </p>
+                                        <div className="text-sm text-gray-600 line-clamp-3 w-full break-words break-all prose prose-sm overflow-hidden">
+                                             <ReactMarkdown>
+                                                  {note.contet
+                                                       ? (note.contet.length > 500
+                                                            ? note.contet.substring(0, 500) + '...'
+                                                            : note.contet)
+                                                       : ''}
+                                             </ReactMarkdown>
+                                        </div>
                                    </button>
 
-                                   <div className="text-xs text-gray-400 mt-2">
+                                   <div className="text-xs text-gray-400 mt-4">
                                         Created: {note.created_at
                                              ? new Date(note.created_at).toLocaleDateString()
                                              : 'Unknown date'}

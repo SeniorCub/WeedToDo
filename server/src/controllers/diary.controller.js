@@ -1,7 +1,8 @@
 import { addDiary, getDiaryByUserId, removeDiary } from "../models/diary.model.js";
 
 export const createDiary = async (req, res) => {
-     const { user_id, type, content, created_at } = req.body;
+     const { type, content, created_at } = req.body;
+     const user_id = req.user.id;
 
      if (!user_id || !type || !created_at) {
           return res.status(400).json({ message: 'Please provide all required fields' });
@@ -40,7 +41,7 @@ export const createDiary = async (req, res) => {
 }
 
 export const getDiaries = async (req, res) => {
-     const { user_id } = req.params;
+     const user_id = req.user.id;
      if (!user_id) {
           return res.status(400).json({ message: 'Please provide user ID' });
      }
@@ -59,13 +60,14 @@ export const getDiaries = async (req, res) => {
 
 export const deleteDiary = async (req, res) => {
      const { id } = req.params;
+     const user_id = req.user.id;
      if (!id) {
-          return res.status(400).json({ message: 'Please provide user ID' });
+          return res.status(400).json({ message: 'Please provide entry ID' });
      }
      try {
-          const result = await removeDiary(id)
+          const result = await removeDiary(id, user_id)
           if (result.affectedRows === 0) {
-               return res.status(402).json({ message: 'diary entry not deleted' })
+               return res.status(402).json({ message: 'diary entry not found or deleted' })
           } else {
                res.status(200).json({
                     message: 'diary entry deleted successfully',

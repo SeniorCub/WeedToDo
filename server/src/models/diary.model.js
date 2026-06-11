@@ -20,9 +20,9 @@ export const getDiaryByUserId = async (user_id) => {
      }
 }
 
-export const removeDiary = async (id) => {
+export const removeDiary = async (id, user_id) => {
      try {
-          const [result] = await db.query('DELETE FROM diary_tb WHERE id = ?', [id]);
+          const [result] = await db.query('DELETE FROM diary_tb WHERE id = ? AND user_id = ?', [id, user_id]);
           return result
      } catch (error) {
           console.error('Database error:', error.message);

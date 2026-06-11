@@ -23,48 +23,22 @@ export const useSignInWithGoogle = () => {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
+      const idToken = await user.getIdToken();
 
-      // Prepare user data
-      const userData = {
-        email: user.email,
-        fullname: user.displayName,
-        photoUrl: user.photoURL
-      };
+      // We now send the idToken to a single backend endpoint to handle login/register
+      const response = await axios.post(`${apiURL}/user/google-auth`, { idToken });
+      
+      toast.success(response.data.message || "Authentication successful!", { icon: "✅" });
 
-      // Check if user exists
-      const checkUserResponse = await axios.get(`${apiURL}/user/check?email=${user.email}`);
+      const responseData = response.data;
+      localStorage.setItem("token", responseData.token);
+      localStorage.setItem("id", responseData.data.id);
+      localStorage.setItem("email", responseData.data.email);
 
-      if (checkUserResponse.data.exists) {
-        toast.loading("User already exists. Logging in...", { icon: "ℹ️" });
-        setTimeout(async () => {
-          const loginResponse = await axios.post(`${apiURL}/user/login`, { email: user.email });
-          let response = loginResponse.data;
-          toast.success("Login successful!", { icon: "✅" });
+      setTimeout(() => {
+        setRedirectToHome(true);
+      }, 1000);
 
-          localStorage.setItem("token", response.token);
-          localStorage.setItem("id", response.data.id);
-          localStorage.setItem("email", response.data.email);
-
-          setTimeout(() => {
-            setRedirectToHome(true);
-          }, 2000);
-        }, 2000);
-      } else {
-        // If user does not exist, create new account
-        const response = await axios.post(`${apiURL}/user/create`, userData, {
-          headers: { "Content-Type": "application/json" }
-        });
-        toast.success("Registration successful!", { icon: "🎉" });
-
-        let responsee = response.data;
-        localStorage.setItem("token", responsee.token);
-        localStorage.setItem("id", responsee.data.id);
-        localStorage.setItem("email", responsee.data.email);
-
-        setTimeout(() => {
-          setRedirectToHome(true);
-        }, 2000);
-      }
     } catch (error) {
       console.error("Google Sign-In Error:", error);
       toast.error(error.response?.data?.message || "Sign-in failed. Please try again.");

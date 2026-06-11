@@ -5,38 +5,28 @@ import { AiFillTag } from 'react-icons/ai';
 import { CgClose } from 'react-icons/cg';
 import { useState } from 'react';
 import CreateNote from './CreateNote';
-
-const API_URL = import.meta.env.VITE_API_URL;
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import api from '../../api/axios';
+import ReactMarkdown from 'react-markdown';
 
 const ShowNote = ({ notes, isOpen, set }) => {
      const [isEditing, setIsEditing] = useState(false);
      const [selectedNote, setSelectedNote] = useState(null);
+     const queryClient = useQueryClient();
+     const userId = localStorage.getItem('id');
 
-     const deleteNote = async (noteId) => {
-          try {
-               const token = localStorage.getItem('token');
-
-               const requestOptions = {
-                    method: "DELETE",
-                    headers: {
-                         'Content-Type': 'application/json',
-                         Authorization: `Bearer ${token}`,
-                    },
-               };
-
-               let response = await fetch(`${API_URL}/note/delete/${noteId}`, requestOptions);
-
-               if (response.ok) {
-                    toast.success("Note deleted successfully.");
-                    window.location.reload();
-               } else {
-                    toast.error("Failed to delete note.");
-               }
-          } catch (error) {
+     const deleteMutation = useMutation({
+          mutationFn: (noteId) => api.delete(`/note/delete/${noteId}`),
+          onSuccess: () => {
+               toast.success("Note deleted successfully.");
+               queryClient.invalidateQueries({ queryKey: ['notes', userId] });
+               set(false);
+          },
+          onError: (error) => {
                console.error("Error deleting note:", error);
                toast.error("Failed to delete note.");
           }
-     };
+     });
 
      const handleEditClick = () => {
           setSelectedNote(notes); // Set the current note for editing
@@ -67,7 +57,7 @@ const ShowNote = ({ notes, isOpen, set }) => {
                                         <CgClose size={24} />
                                    </button>
                               </div>
-                              <div className="flex justify-between items-start mb-2">
+                              <div className="flex justify-between items-start mb-2 border-b pb-2">
                                    <div className="text-xs text-gray-400 mt-2">
                                         Created: {notes.created_at ? new Date(notes.created_at).toLocaleDateString() : 'Unknown date'}
                                    </div>
@@ -75,14 +65,20 @@ const ShowNote = ({ notes, isOpen, set }) => {
                                         <button className="text-color1 p-1 rounded-full cursor-pointer" onClick={() => handleEditClick()}>
                                              <BiEdit size={20} />
                                         </button>
-                                        <button className="text-red-500 hover:bg-red-100 p-1 rounded-full" onClick={() => deleteNote(notes.id)}>
+                                        <button 
+                                             className="text-red-500 hover:bg-red-100 p-1 rounded-full disabled:opacity-50" 
+                                             onClick={() => deleteMutation.mutate(notes.id)}
+                                             disabled={deleteMutation.isPending}
+                                        >
                                              <BiTrash size={20} />
                                         </button>
                                    </div>
                               </div>
-                              <p className="text-sm text-gray-600 max-h-96 overflow-y-auto w-full break-words">
-                                   {notes.contet || "No content available."}
-                              </p>
+                              <div className="text-sm text-gray-700 max-h-[60vh] overflow-y-auto w-full break-words prose prose-indigo max-w-none mt-4">
+                                   <ReactMarkdown>
+                                        {notes.contet || "No content available."}
+                                   </ReactMarkdown>
+                              </div>
                          </div>
                     </div>
                )}

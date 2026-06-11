@@ -4,6 +4,8 @@ import { toast } from 'react-hot-toast';
 import { CgClose } from 'react-icons/cg';
 import { BsFileText } from 'react-icons/bs';
 import { BiMicrophone, BiTrash, BiPlay, BiPause } from 'react-icons/bi';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import api from '../../api/axios';
 
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -21,6 +23,8 @@ const ShowDiary = ({ diary, isOpen, set }) => {
      const [currentTime, setCurrentTime] = useState(0);
      const [duration, setDuration] = useState(0);
      const audioRef = useRef(null);
+     const queryClient = useQueryClient();
+     const userId = localStorage.getItem('id');
 
      const getAudioSrc = () => {
           const baseUrl = API_URL.split('api')[0];
@@ -90,29 +94,19 @@ const ShowDiary = ({ diary, isOpen, set }) => {
                }
           };
      }, []);
-     const handleDelete = async (taskId) => {
-          try {
-               const token = localStorage.getItem('token');
 
-               const requestOptions = {
-                    method: "DELETE",
-                    headers: {
-                         'Content-Type': 'application/json',
-                         Authorization: `Bearer ${token}`,
-                    },
-               };
-               let response = await fetch(`${API_URL}/diary/delete/${taskId}`, requestOptions);
-               if (response.status === 200) {
-                    toast.success("Task deleted successfully.");
-                    window.location.reload();
-               } else {
-                    toast.error("Failed to delete diary entry.");
-               }
-          } catch (error) {
+     const deleteMutation = useMutation({
+          mutationFn: (taskId) => api.delete(`/diary/delete/${taskId}`),
+          onSuccess: () => {
+               toast.success("Diary entry deleted successfully.");
+               queryClient.invalidateQueries({ queryKey: ['diaries', userId] });
+               set(false);
+          },
+          onError: (error) => {
                console.error("Error deleting diary entry:", error);
                toast.error("Failed to delete diary entry.");
           }
-     };
+     });
 
 
      return (
@@ -195,7 +189,11 @@ const ShowDiary = ({ diary, isOpen, set }) => {
                                    </audio>
                               </div>
                          )}
-                         <button className="float-end flex items-center border border-red-300 text-red-300 hover:bg-red-100 p-1 rounded-full hover:text-red-500 hover:border-red-500" onClick={() => handleDelete(diary.id)}>
+                         <button 
+                              className="float-end flex items-center border border-red-300 text-red-300 hover:bg-red-100 p-1 rounded-full hover:text-red-500 hover:border-red-500 disabled:opacity-50" 
+                              onClick={() => deleteMutation.mutate(diary.id)}
+                              disabled={deleteMutation.isPending}
+                         >
                               <BiTrash size={20} /> Delete
                          </button>
                     </div>
